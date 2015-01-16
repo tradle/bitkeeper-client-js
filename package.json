@@ -1,5 +1,5 @@
 {
-  "name": "bitkeeperAPI",
+  "name": "bitkeeper-client-js",
   "version": "0.0.1",
   "description": "Tradle bitkeeper API",
   "main": "index.js",

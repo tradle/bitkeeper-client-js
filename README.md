@@ -1,2 +1,2 @@
-# bitkeeperAPI
+# bitkeeper client
 tradle bitkeeper api

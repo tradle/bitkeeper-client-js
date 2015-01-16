@@ -1,2 +1,2 @@
 # bitkeeper client
-tradle bitkeeper api
+use this tradle bitkeeper api to issue REST http requests to bitkeeper

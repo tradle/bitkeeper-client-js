@@ -1,8 +1,6 @@
-
 'use strict';
 
 var Q = require('q');
-var assert = require('assert');
 var querystring = require('querystring');
 var request = require('request');
 var get = require('simple-get');
@@ -14,8 +12,7 @@ function KeeperAPI(config) {
     var parts = config.split(':');
     this._host = parts[0];
     this._port = parts[1];
-  }
-  else {
+  } else {
     this._host = config.host;
     this._port = config.port;
   }
@@ -27,57 +24,71 @@ KeeperAPI.prototype.baseUrl = function() {
 }
 
 KeeperAPI.prototype.urlFor = function(key) {
-  return this.baseUrl() + 'get?' + querystring.stringify({ key: key });
+  return this.baseUrl() + 'get?' + querystring.stringify({
+    key: key
+  });
 }
 
 KeeperAPI.prototype.put = function(key, value, callback) {
   if (Buffer.isBuffer(key)) key = key.toString('hex');
-  
-  request({
-    method: 'PUT',
-    body: value,
-    url: this.baseUrl() + 'put?' + querystring.stringify({ key: key })
-  }, callback || noop);
+
+  return Q.nfcall(request, {
+      method: 'PUT',
+      body: value,
+      url: this.baseUrl() + 'put?' + querystring.stringify({
+        key: key
+      })
+    })
+    .then(function(result) {
+      return result[1]; // body
+    })
 }
 
 // separate requests for now
-KeeperAPI.prototype.getMany = function(keys, callback) {
+KeeperAPI.prototype.getMany = function(keys) {
   var self = this;
   var tasks = keys.map(function(k) {
     return Q.ninvoke(self, 'getOne', k);
   })
 
-  Q.allSettled(tasks)
-  .then(function(results) {
-    results = results.map(function(r) { return r.value });
-    callback(null, results);
-  })
-  .catch(callback);
+  return Q.allSettled(tasks)
+    .then(function(results) {
+      return results.map(function(r) {
+        return r.value
+      });
+    })
+}
+
+KeeperAPI.prototype.isKeeper = function() {
+  return false;
 }
 
 KeeperAPI.prototype.getOne = function(key, callback) {
   callback = callback || noop;
-  
+
   // var params = {
   //   keys: typeof keys === 'string' ? keys : keys.join(',')
   // };
 
-  get.concat(this.urlFor(key), function(err, data, res) {
-    if (err) return callback(err);
+  return Q.ninvoke(get, 'concat', this.urlFor(key))
+    .then(function(result) {
+      return result[1]; //data
+    })
+    // if (err) return callback(err);
 
-    if (res.statusCode !== 200) {
-      var msg = 'Failed to get data from keeper';
-      if (data.length)
-        msg = JSON.parse(data.toString()).message;
+  // if (res.statusCode !== 200) {
+  //   var msg = 'Failed to get data from keeper';
+  //   if (data.length)
+  //     msg = JSON.parse(data.toString()).message;
 
-      err = new Error(msg);
-      err.code = res.statusCode;
+  //   err = new Error(msg);
+  //   err.code = res.statusCode;
 
-      return callback(err);
-    }
+  //   return callback(err);
+  // }
 
-    callback(null, data);
-  });
+  //   callback(null, data);
+  // });
 }
 
 // KeeperAPI.prototype._put = function(method, key, value, callback) {

@@ -6,8 +6,7 @@
   "scripts": {
     "jsbeautify": "js-beautify -r *.js --config=node_modules/tradle-style/.jsbeautifyrc",
     "jscs": "jscs *.js --config=node_modules/tradle-style/.jscsrc",
-    "jshint": "jshint *.js --config=node_modules/tradle-style/.jshintrc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "jshint": "jshint *.js --config=node_modules/tradle-style/.jshintrc"
   },
   "pre-commit": [
     "jscs",

@@ -4,8 +4,6 @@ var Q = require('q');
 var querystring = require('querystring');
 var request = require('request');
 var get = require('simple-get');
-// var utils = require('tradle-utils');
-var noop = function() {};
 
 function KeeperAPI(config) {
   if (typeof config === 'string') {
@@ -48,7 +46,7 @@ KeeperAPI.prototype.put = function(key, value, callback) {
 KeeperAPI.prototype.getMany = function(keys) {
   var self = this;
   var tasks = keys.map(function(k) {
-    return Q.ninvoke(self, 'getOne', k);
+    return self.getOne(k);
   })
 
   return Q.allSettled(tasks)
@@ -56,47 +54,18 @@ KeeperAPI.prototype.getMany = function(keys) {
       return results.map(function(r) {
         return r.value
       });
-    })
+    });
 }
 
 KeeperAPI.prototype.isKeeper = function() {
   return false;
 }
 
-KeeperAPI.prototype.getOne = function(key, callback) {
-  callback = callback || noop;
-
-  // var params = {
-  //   keys: typeof keys === 'string' ? keys : keys.join(',')
-  // };
-
+KeeperAPI.prototype.getOne = function(key) {
   return Q.ninvoke(get, 'concat', this.urlFor(key))
     .then(function(result) {
-      return result[1]; //data
+      return result[0]; //data
     })
-    // if (err) return callback(err);
-
-  // if (res.statusCode !== 200) {
-  //   var msg = 'Failed to get data from keeper';
-  //   if (data.length)
-  //     msg = JSON.parse(data.toString()).message;
-
-  //   err = new Error(msg);
-  //   err.code = res.statusCode;
-
-  //   return callback(err);
-  // }
-
-  //   callback(null, data);
-  // });
 }
-
-// KeeperAPI.prototype._put = function(method, key, value, callback) {
-//   // request.post({
-//   //   headers: {'content-type' : 'application/x-www-form-urlencoded'},
-//   //   url: this.baseUrl() + method,
-//   //   body: querystring.stringify(params)
-//   // }, callback || noop);
-// }
 
 module.exports = KeeperAPI;

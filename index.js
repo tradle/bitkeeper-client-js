@@ -63,8 +63,8 @@ KeeperAPI.prototype.isKeeper = function() {
 
 KeeperAPI.prototype.getOne = function(key) {
   return Q.ninvoke(get, 'concat', this.urlFor(key))
-    .then(function(result) {
-      return result[0]; //data
+    .spread(function(data, res) {
+      if (res.statusCode === 200) return data;
     })
 }
 

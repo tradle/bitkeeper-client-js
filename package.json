@@ -12,6 +12,13 @@
     "jscs",
     "jshint"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tradle/bitkeeper-client-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tradle/bitkeeper-client-js/issues"
+  },
   "author": "Mark Vayngrib <mark.vayngrib@lablz.com> (http://github.com/mvayngrib)",
   "license": "MIT",
   "dependencies": {

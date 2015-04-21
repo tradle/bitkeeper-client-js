@@ -1,15 +1,17 @@
 'use strict';
 
 var Q = require('q');
-var querystring = require('querystring');
 var request = require('request');
 var get = require('simple-get');
+var url = require('url');
 
 function KeeperAPI(config) {
   if (typeof config === 'string') {
-    var parts = config.split(':');
-    this._host = parts[0];
-    this._port = parts[1];
+    if (config.indexOf('://') === -1) config = 'http://' + config;
+
+    config = url.parse(config);
+    this._host = config.hostname;
+    this._port = config.port;
   } else {
     this._host = config.host;
     this._port = config.port;
@@ -22,9 +24,7 @@ KeeperAPI.prototype.baseUrl = function() {
 }
 
 KeeperAPI.prototype.urlFor = function(key) {
-  return this.baseUrl() + 'get?' + querystring.stringify({
-    key: key
-  });
+  return this.baseUrl() + key;
 }
 
 KeeperAPI.prototype.put = function(key, value, callback) {
@@ -33,9 +33,7 @@ KeeperAPI.prototype.put = function(key, value, callback) {
   return Q.nfcall(request, {
       method: 'PUT',
       body: value,
-      url: this.baseUrl() + 'put?' + querystring.stringify({
-        key: key
-      })
+      url: this.baseUrl() + key
     })
     .then(function(result) {
       return result[1]; // body

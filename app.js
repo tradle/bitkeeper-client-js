@@ -25,10 +25,8 @@ else if (args.version) {
   runVersion();
 }
 
-args.data = path.resolve(args.data);
-if (!fs.existsSync(args.data)) {
-  throw new Error('data file not found: ' + args.data);
-}
+if (/^@/.test(args.data)) args.data = fs.readFileSync(args.data.slice(1));
+else args.data = JSON.parse(args.data);
 
 var attachments;
 if (args.attachment) {
@@ -46,11 +44,10 @@ if (args.attachment) {
   })
 }
 
-var data = require(args.data);
 var Client = require('./');
 var client = new Client(args._[0]);
 
-var builder = new Builder().data(data);
+var builder = new Builder().data(args.data);
 if (attachments) {
   attachments.forEach(function(a) {
     builder.attach(a[0], a[1]);
@@ -80,9 +77,9 @@ function runHelp() {
   Usage:
       keep [bitkeeper-server url] <options>
   Example:
-      keep http://localhost:25667/ -d "blah.json" -a headshot=a.png -a resume=b.pdf
+      keep http://localhost:25667/ -d "@blah.json" -a headshot=a.png -a resume=b.pdf
   Options:
-      -d, --data                  path to primary data file (json)
+      -d, --data                  @{path/to/json} OR json string
       -a, --attachment            attachment, format: -a name=path/to/attachment
       -p, --printOnly             print, but don't execute "put"
       --version                   print the current version

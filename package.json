@@ -25,7 +25,7 @@
   "author": "Mark Vayngrib <mark.vayngrib@lablz.com> (http://github.com/mvayngrib)",
   "license": "MIT",
   "dependencies": {
-    "chained-obj": "git://github.com/tradle/chained-obj",
+    "chained-obj": "git://github.com/tradle/chained-obj#dev",
     "minimist": "^1.1.1",
     "q": "^1.1.2",
     "request": "^2.51.0",

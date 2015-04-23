@@ -33,13 +33,15 @@ if (args.attachment) {
   attachments = Array.isArray(args.attachment) ? args.attachment : [args.attachment];
   attachments = attachments.map(function(a) {
     a = a.split('=');
-    a[1] = path.resolve(a[1]);
-    return a;
+    return {
+      name: a[0],
+      path: path.resolve(a[1])
+    }
   })
 
   attachments.every(function(a) {
-    if (!fs.existsSync(a[1])) {
-      throw new Error('attachment not found: ' + a[1]);
+    if (!fs.existsSync(a.path)) {
+      throw new Error('attachment not found: ' + a.path);
     }
   })
 }
@@ -49,9 +51,7 @@ var client = new Client(args._[0]);
 
 var builder = new Builder().data(args.data);
 if (attachments) {
-  attachments.forEach(function(a) {
-    builder.attach(a[0], a[1]);
-  })
+  attachments.forEach(builder.attach, builder);
 }
 
 builder.build(function(err, buf) {

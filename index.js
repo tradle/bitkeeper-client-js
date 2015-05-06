@@ -1,7 +1,7 @@
 'use strict';
 
 var Q = require('q');
-var request = require('request');
+var request = require('superagent');
 var get = require('simple-get');
 var url = require('url');
 
@@ -30,14 +30,17 @@ KeeperAPI.prototype.urlFor = function(key) {
 KeeperAPI.prototype.put = function(key, value, callback) {
   if (Buffer.isBuffer(key)) key = key.toString('hex');
 
-  return Q.nfcall(request, {
-      method: 'PUT',
-      body: value,
-      url: this.baseUrl() + key
+  var defer = Q.defer()
+  request.put(this.baseUrl() + key)
+    .type('application/octet-stream')
+    .send(value)
+    .end(function(err, resp) {
+      if (resp.status !== 200) return defer.reject(new Error(resp.body.message))
+      else if (err) return defer.reject(err)
+      else defer.resolve(resp.body)
     })
-    .then(function(result) {
-      return result[1]; // body
-    })
+
+  return defer.promise
 }
 
 // separate requests for now

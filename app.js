@@ -25,6 +25,11 @@ else if (args.version) {
   runVersion();
 }
 
+if (!args.data) {
+  console.error('missing parameter "data", see usage:\n')
+  runHelp()
+}
+
 if (/^@/.test(args.data)) args.data = fs.readFileSync(args.data.slice(1));
 else args.data = JSON.parse(args.data);
 

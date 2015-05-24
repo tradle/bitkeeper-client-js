@@ -1,40 +1,40 @@
-'use strict';
+'use strict'
 
-var Q = require('q');
-var request = require('superagent');
-var get = require('simple-get');
-var url = require('url');
+var Q = require('q')
+var request = require('superagent')
+var get = require('simple-get')
+var url = require('url')
 
-function KeeperAPI(config) {
+function KeeperAPI (config) {
   if (typeof config === 'string') {
-    if (config.indexOf('://') === -1) config = 'http://' + config;
+    if (config.indexOf('://') === -1) config = 'http://' + config
 
-    config = url.parse(config);
-    this._host = config.hostname;
-    this._port = config.port;
+    config = url.parse(config)
+    this._host = config.hostname
+    this._port = config.port
   } else {
-    this._host = config.host;
-    this._port = config.port;
+    this._host = config.host
+    this._port = config.port
   }
 }
 
-KeeperAPI.prototype.baseUrl = function() {
-  var protocol = this._host.indexOf('://') === -1 ? 'http://' : '';
-  return protocol + this._host + ':' + this._port + '/';
+KeeperAPI.prototype.baseUrl = function () {
+  var protocol = this._host.indexOf('://') === -1 ? 'http://' : ''
+  return protocol + this._host + ':' + this._port + '/'
 }
 
-KeeperAPI.prototype.urlFor = function(key) {
-  return this.baseUrl() + key;
+KeeperAPI.prototype.urlFor = function (key) {
+  return this.baseUrl() + key
 }
 
-KeeperAPI.prototype.put = function(key, value, callback) {
-  if (Buffer.isBuffer(key)) key = key.toString('hex');
+KeeperAPI.prototype.put = function (key, value, callback) {
+  if (Buffer.isBuffer(key)) key = key.toString('hex')
 
   var defer = Q.defer()
   request.put(this.baseUrl() + key)
     .type('application/octet-stream')
     .send(value)
-    .end(function(err, resp) {
+    .end(function (err, resp) {
       if (resp.status !== 200) return defer.reject(new Error(resp.body.message))
       else if (err) return defer.reject(err)
       else defer.resolve(resp.body)
@@ -44,29 +44,29 @@ KeeperAPI.prototype.put = function(key, value, callback) {
 }
 
 // separate requests for now
-KeeperAPI.prototype.getMany = function(keys) {
-  var self = this;
-  var tasks = keys.map(function(k) {
-    return self.getOne(k);
+KeeperAPI.prototype.getMany = function (keys) {
+  var self = this
+  var tasks = keys.map(function (k) {
+    return self.getOne(k)
   })
 
   return Q.allSettled(tasks)
-    .then(function(results) {
-      return results.map(function(r) {
+    .then(function (results) {
+      return results.map(function (r) {
         return r.value
-      });
-    });
-}
-
-KeeperAPI.prototype.isKeeper = function() {
-  return false;
-}
-
-KeeperAPI.prototype.getOne = function(key) {
-  return Q.ninvoke(get, 'concat', this.urlFor(key))
-    .spread(function(data, res) {
-      if (res.statusCode === 200) return data;
+      })
     })
 }
 
-module.exports = KeeperAPI;
+KeeperAPI.prototype.isKeeper = function () {
+  return false
+}
+
+KeeperAPI.prototype.getOne = function (key) {
+  return Q.ninvoke(get, 'concat', this.urlFor(key))
+    .spread(function (data, res) {
+      if (res.statusCode === 200) return data
+    })
+}
+
+module.exports = KeeperAPI

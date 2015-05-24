@@ -7,13 +7,10 @@
     "keep": "./app.js"
   },
   "scripts": {
-    "jsbeautify": "js-beautify -r *.js --config=node_modules/tradle-style/.jsbeautifyrc",
-    "jscs": "jscs *.js --config=node_modules/tradle-style/.jscsrc",
-    "jshint": "jshint *.js --config=node_modules/tradle-style/.jshintrc"
+    "style": "standard"
   },
   "pre-commit": [
-    "jscs",
-    "jshint"
+    "style"
   ],
   "repository": {
     "type": "git",

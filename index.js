@@ -64,7 +64,7 @@ KeeperAPI.prototype.isKeeper = function () {
 KeeperAPI.prototype.getOne = function (key) {
   var req = request.get(this.urlFor(key))
   return Q.ninvoke(req, 'end')
-    .then(function(res) {
+    .then(function (res) {
       if (res.statusCode === 200) return res.body
     })
 }

@@ -24,5 +24,9 @@
     "q": "^1.1.2",
     "superagent": "git://github.com/visionmedia/superagent#7e771f",
     "tradle-utils": "^0.1.0"
+  },
+  "devDependencies": {
+    "pre-commit": "^1.0.7",
+    "standard": "^3.11.1"
   }
 }

@@ -26,10 +26,8 @@ if (args.help || !args.port) {
   runVersion()
 }
 
-if (args.data) put()
-else {
-  if (args.infoHash) get()
-  else {
+if (args.data) put() else {
+  if (args.infoHash) get() else {
     console.error('missing parameter "data", see usage:\n')
     runHelp()
   }

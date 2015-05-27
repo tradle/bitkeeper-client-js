@@ -2,7 +2,6 @@
 
 var Q = require('q')
 var request = require('superagent')
-var get = require('simple-get')
 var url = require('url')
 
 function KeeperAPI (config) {
@@ -35,8 +34,8 @@ KeeperAPI.prototype.put = function (key, value, callback) {
     .type('application/octet-stream')
     .send(value)
     .end(function (err, resp) {
-      if (resp.status !== 200) return defer.reject(new Error(resp.body.message))
-      else if (err) return defer.reject(err)
+      if (err) return defer.reject(err)
+      else if (resp.status !== 200) return defer.reject(new Error(resp.body.message))
       else defer.resolve(resp.body)
     })
 
@@ -63,9 +62,10 @@ KeeperAPI.prototype.isKeeper = function () {
 }
 
 KeeperAPI.prototype.getOne = function (key) {
-  return Q.ninvoke(get, 'concat', this.urlFor(key))
-    .spread(function (data, res) {
-      if (res.statusCode === 200) return data
+  var req = request.get(this.urlFor(key))
+  return Q.ninvoke(req, 'end')
+    .then(function(res) {
+      if (res.statusCode === 200) return res.body
     })
 }
 

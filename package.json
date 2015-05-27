@@ -9,6 +9,9 @@
   "scripts": {
     "style": "standard"
   },
+  "pre-commit": [
+    "style"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/tradle/bitkeeper-client-js.git"

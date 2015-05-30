@@ -117,6 +117,6 @@ function runHelp () {
 }
 
 function runVersion () {
-  console.log(require('../package.json').version)
+  console.log(require('./package.json').version)
   process.exit(0)
 }

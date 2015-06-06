@@ -1,7 +1,7 @@
 'use strict'
 
 var Q = require('q')
-var request = require('superagent')
+var nets = require('nets')
 var url = require('url')
 
 function KeeperAPI (config) {
@@ -30,14 +30,18 @@ KeeperAPI.prototype.put = function (key, value, callback) {
   if (Buffer.isBuffer(key)) key = key.toString('hex')
 
   var defer = Q.defer()
-  request.put(this.baseUrl() + key)
-    .type('application/octet-stream')
-    .send(value)
-    .end(function (err, resp) {
-      if (err) return defer.reject(err)
-      else if (resp.status !== 200) return defer.reject(new Error(resp.body.message))
-      else defer.resolve(resp.body)
-    })
+  nets({
+    url: this.baseUrl() + key,
+    body: value,
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/octet-stream'
+    }
+  }, function (err, resp) {
+    if (err) return defer.reject(err)
+    else if (resp.statusCode !== 200) return defer.reject(new Error(resp.body.message))
+    else defer.resolve(resp.body)
+  })
 
   return defer.promise
 }
@@ -62,11 +66,19 @@ KeeperAPI.prototype.isKeeper = function () {
 }
 
 KeeperAPI.prototype.getOne = function (key) {
-  var req = request.get(this.urlFor(key))
-  return Q.ninvoke(req, 'end')
-    .then(function (res) {
-      if (res.status === 200) return res.body
-    })
+  var defer = Q.defer()
+  nets({ url: this.urlFor(key) }, function (err, resp, body) {
+    if (err || resp.statusCode !== 200) {
+      defer.reject(err || new Error('failed to retrieve file'))
+    } else {
+      defer.resolve(body)
+    }
+  })
+
+  return defer.promise
 }
+
+// compatibility with bitkeeper API
+KeeperAPI.prototype.destroy = function () {}
 
 module.exports = KeeperAPI

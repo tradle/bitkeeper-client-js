@@ -24,8 +24,8 @@
   "dependencies": {
     "chained-obj": "git://github.com/tradle/chained-obj#dev",
     "minimist": "^1.1.1",
+    "nets": "^3.1.0",
     "q": "^1.1.2",
-    "superagent": "git://github.com/visionmedia/superagent#7e771f",
     "tradle-utils": "^0.1.0"
   },
   "devDependencies": {

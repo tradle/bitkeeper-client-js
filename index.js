@@ -69,7 +69,7 @@ KeeperAPI.prototype.isKeeper = function () {
 KeeperAPI.prototype.getOne = function (key) {
   var defer = Q.defer()
   nets({ url: this.urlFor(key) }, function (err, resp, body) {
-    if (err || resp.statusCode !== 200) {
+    if (err || resp.statusCode !== 200 || typeof body === 'undefined') {
       defer.reject(err || new Error('failed to retrieve file'))
     } else {
       if (typeof body === 'string') {

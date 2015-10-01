@@ -3,6 +3,7 @@
 var Q = require('q')
 var nets = require('nets')
 var url = require('url')
+var putString = !!global.fetch
 
 function KeeperAPI (config) {
   if (typeof config === 'string') {
@@ -32,7 +33,7 @@ KeeperAPI.prototype.put = function (key, value, callback) {
   var defer = Q.defer()
   nets({
     url: this.baseUrl() + key,
-    body: value,
+    body: putString ? value.toString('binary') : value,
     method: 'PUT',
     headers: {
       'Content-Type': 'application/octet-stream'

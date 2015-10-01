@@ -11,8 +11,11 @@ var args = minimist(process.argv.slice(2), {
     a: 'attachment',
     t: 'test', // print only
     p: 'port',
-    h: 'help',
+    h: 'host',
     i: 'infoHash'
+  },
+  default: {
+    host: '127.0.0.1'
   },
   boolean: [
     'test',
@@ -69,7 +72,7 @@ function put () {
   }
 
   var Client = require('./')
-  var client = new Client('http://localhost:' + args.port)
+  var client = new Client('http://' + args.host + ':' + args.port)
 
   var builder = new Builder().data(args.data)
   if (attachments) {
@@ -106,6 +109,7 @@ function runHelp () {
       get:
         ./app.js -p 25667 -i 58cb56af3fe8043c3717acb6918de7d4f7526516
     Options:
+        -h  --host                  keeper host
         -d, --data                  @{path/to/json} OR json string
         -a, --attachment            attachment, format: -a name=path/to/attachment
         -p, --printOnly             print, but don't execute "put"

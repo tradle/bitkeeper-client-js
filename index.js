@@ -39,7 +39,7 @@ KeeperAPI.prototype.put = function (key, value, callback) {
     }
   }, function (err, resp) {
     if (err) return defer.reject(err)
-    else if (resp.statusCode !== 200) return defer.reject(new Error(resp.body.message))
+    else if (resp.statusCode !== 200) return defer.reject(new Error(resp.body))
     else defer.resolve(resp.body)
   })
 

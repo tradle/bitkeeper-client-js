@@ -76,9 +76,10 @@ function put () {
     attachments.forEach(builder.attach, builder)
   }
 
-  builder.build(function (err, buf) {
+  builder.build(function (err, build) {
     if (err) throw err
 
+    var buf = build.form
     utils.getInfoHash(buf, function (err, infoHash) {
       if (err) throw err
 

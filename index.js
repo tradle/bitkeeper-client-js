@@ -71,6 +71,10 @@ KeeperAPI.prototype.getOne = function (key) {
     if (err || resp.statusCode !== 200) {
       defer.reject(err || new Error('failed to retrieve file'))
     } else {
+      if (typeof body === 'string') {
+        body = new Buffer(body)
+      }
+
       defer.resolve(body)
     }
   })

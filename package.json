@@ -1,5 +1,5 @@
 {
-  "name": "bitkeeper-client-js",
+  "name": "@tradle/bitkeeper-client",
   "version": "0.0.1",
   "description": "Tradle bitkeeper API",
   "main": "index.js",
@@ -22,11 +22,11 @@
   "author": "Mark Vayngrib <mark.vayngrib@lablz.com> (http://github.com/mvayngrib)",
   "license": "MIT",
   "dependencies": {
-    "chained-obj": "^1.0.0",
+    "@tradle/chained-obj": "^1.0.0",
     "minimist": "^1.1.1",
     "nets": "^3.1.0",
     "q": "^1.1.2",
-    "tradle-utils": "^0.2.2"
+    "@tradle/utils": "^0.2.2"
   },
   "devDependencies": {
     "pre-commit": "^1.0.7",

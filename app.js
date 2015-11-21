@@ -3,8 +3,8 @@
 var fs = require('fs')
 var path = require('path')
 var minimist = require('minimist')
-var utils = require('tradle-utils')
-var Builder = require('chained-obj').Builder
+var utils = require('@tradle/utils')
+var Builder = require('@tradle/chained-obj').Builder
 var args = minimist(process.argv.slice(2), {
   alias: {
     d: 'data',

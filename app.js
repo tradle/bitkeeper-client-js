@@ -2,6 +2,7 @@
 
 var fs = require('fs')
 var path = require('path')
+var Q = require('q')
 var minimist = require('minimist')
 var utils = require('@tradle/utils')
 var Builder = require('@tradle/chained-obj').Builder
@@ -9,7 +10,7 @@ var args = minimist(process.argv.slice(2), {
   alias: {
     d: 'data',
     a: 'attachment',
-    t: 'test', // print only
+    t: 'dry-run', // print only
     p: 'port',
     h: 'host',
     i: 'infoHash'
@@ -18,12 +19,12 @@ var args = minimist(process.argv.slice(2), {
     host: '127.0.0.1'
   },
   boolean: [
-    'test',
+    'dry-run',
     'help'
   ]
 })
 
-if (args.help || !args.port) {
+if (args.help || !(args.port || args['dry-run'])) {
   runHelp()
 } else if (args.version) {
   runVersion()
@@ -74,28 +75,29 @@ function put () {
   var Client = require('./')
   var client = new Client('http://' + args.host + ':' + args.port)
 
-  var builder = new Builder().data(args.data)
   if (attachments) {
-    attachments.forEach(builder.attach, builder)
+    throw new Error('not supported yet, include attachments in body')
+    // attachments.forEach(builder.attach, builder)
   }
 
-  builder.build(function (err, build) {
-    if (err) throw err
-
-    var buf = build.form
-    utils.getInfoHash(buf, function (err, infoHash) {
-      if (err) throw err
-
+  var buf
+  new Builder()
+    .data(args.data)
+    .build()
+    .then(function (_buf) {
+      buf = _buf
+      return Q.ninvoke(utils, 'getInfoHash', buf)
+    })
+    .then(function (infoHash) {
       console.log(infoHash)
-      if (args.printOnly) return
+      if (args['dry-run']) return
 
       return client.put(infoHash, buf)
         .then(function (resp) {
           if (resp) console.log(resp)
         })
-        .done()
     })
-  })
+    .done()
 }
 
 function runHelp () {
@@ -112,7 +114,7 @@ function runHelp () {
         -h  --host                  keeper host
         -d, --data                  @{path/to/json} OR json string
         -a, --attachment            attachment, format: -a name=path/to/attachment
-        -p, --printOnly             print, but don't execute "put"
+        --dry-run                   print, but don't execute "put"
         --version                   print the current version
 
     Please report bugs!  https://github.com/tradle/bitkeeper-client-js/issues

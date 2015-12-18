@@ -1,6 +1,6 @@
 {
   "name": "@tradle/bitkeeper-client",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Tradle bitkeeper API",
   "main": "index.js",
   "bin": {

@@ -2,29 +2,27 @@
 
 var Q = require('q')
 var nets = require('nets')
-var url = require('url')
-var putString = !!global.fetch
+var putString
+try {
+  require('react-native')
+} catch (err) {
+  putString = true
+}
 
-function KeeperAPI (config) {
-  if (typeof config === 'string') {
-    if (config.indexOf('://') === -1) config = 'http://' + config
-
-    config = url.parse(config)
-    this._host = config.hostname
-    this._port = config.port
-  } else {
-    this._host = config.host
-    this._port = config.port
+function KeeperAPI (url) {
+  if (typeof url !== 'string') {
+    throw new Error('expected string')
   }
+
+  if (url[url.length - 1] !== '/') {
+    url += '/'
+  }
+
+  this._baseUrl = url
 }
 
-KeeperAPI.prototype.baseUrl = function () {
-  var protocol = this._host.indexOf('://') === -1 ? 'http://' : ''
-  return protocol + this._host + ':' + this._port + '/'
-}
-
-KeeperAPI.prototype.urlFor = function (key) {
-  return this.baseUrl() + key
+KeeperAPI.prototype._urlFor = function (key) {
+  return this._baseUrl + key
 }
 
 KeeperAPI.prototype.put = function (key, value, callback) {
@@ -68,7 +66,7 @@ KeeperAPI.prototype.isKeeper = function () {
 
 KeeperAPI.prototype.getOne = function (key) {
   var defer = Q.defer()
-  nets({ url: this.urlFor(key) }, function (err, resp, body) {
+  nets({ url: this._urlFor(key) }, function (err, resp, body) {
     if (err || resp.statusCode !== 200 || typeof body === 'undefined') {
       defer.reject(err || new Error('failed to retrieve file'))
     } else {
@@ -84,6 +82,8 @@ KeeperAPI.prototype.getOne = function (key) {
 }
 
 // compatibility with bitkeeper API
-KeeperAPI.prototype.destroy = function () {}
+KeeperAPI.prototype.destroy = function () {
+  return Q()
+}
 
 module.exports = KeeperAPI

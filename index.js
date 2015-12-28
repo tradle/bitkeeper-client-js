@@ -18,6 +18,10 @@ function KeeperAPI (url) {
     url += '/'
   }
 
+  if (url.indexOf('://') === -1) {
+    url = 'http://' + url
+  }
+
   this._baseUrl = url
 }
 
@@ -30,7 +34,7 @@ KeeperAPI.prototype.put = function (key, value, callback) {
 
   var defer = Q.defer()
   nets({
-    url: this.baseUrl() + key,
+    url: this._urlFor(key),
     body: putString ? value.toString('binary') : value,
     method: 'PUT',
     headers: {
